@@ -101,7 +101,11 @@ class CameraController(private val context: Context) {
 
         val factory = currentPreviewView.meteringPointFactory
         val point: MeteringPoint = factory.createPoint(x, y)
-        val action: FocusMeteringAction = FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
+        val action: FocusMeteringAction = FocusMeteringAction.Builder(point,
+            FocusMeteringAction.FLAG_AF or
+            FocusMeteringAction.FLAG_AE or
+            FocusMeteringAction.FLAG_AWB
+        )
             .setAutoCancelDuration(5, TimeUnit.SECONDS)
             .build()
         camera?.cameraControl?.startFocusAndMetering(action)
