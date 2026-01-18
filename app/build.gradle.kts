@@ -3,6 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+import java.util.Properties
+
 android {
     namespace = "com.silentcamera"
     compileSdk = 34
@@ -20,12 +22,32 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            val props = rootProject.file("local.properties")
+            if (props.exists()) {
+                val properties = Properties()
+                properties.load(props.inputStream())
+
+                val storeFilePath = properties["RELEASE_STORE_FILE"]?.toString()
+                if (storeFilePath != null) {
+                    storeFile = rootProject.file(storeFilePath)
+                    storePassword = properties["RELEASE_STORE_PASSWORD"]?.toString()
+                    keyAlias = properties["RELEASE_KEY_ALIAS"]?.toString()
+                    keyPassword = properties["RELEASE_KEY_PASSWORD"]?.toString()
+                }
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
